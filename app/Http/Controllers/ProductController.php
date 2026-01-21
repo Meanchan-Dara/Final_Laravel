@@ -13,8 +13,20 @@ class ProductController extends Controller
      */
     public function index()
     {
-        // ប្រើ with('category') ដើម្បីទាញយកឈ្មោះប្រភេទផលិតផលមកជាមួយ
-        return response()->json(Product::with('category')->latest()->get(), 200);
+        try {
+            $products = Product::with('Categories')->get();
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'All students with courses retrieved successfully',
+                'data' => $products,
+            ], 200);
+        } catch (\Throwable $th) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $th->getMessage(),
+            ], 500);
+        }
     }
 
     /**
