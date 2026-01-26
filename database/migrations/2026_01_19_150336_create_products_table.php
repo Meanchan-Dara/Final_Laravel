@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('products', function (Blueprint $table) {
-            $table->id(); // bigint auto increment
+            $table->id();
             $table->string('product_name', 255);
             $table->decimal('price', 10, 2);
             $table->integer('stock_qty');

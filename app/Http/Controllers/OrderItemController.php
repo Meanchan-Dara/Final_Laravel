@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Log;
 class OrderItemController extends Controller
 {
     /**
-     * បង្ហាញបញ្ជី Order Items ទាំងអស់
+     * Display a list of all Order Items
      */
     public function index()
     {
@@ -23,13 +23,13 @@ class OrderItemController extends Controller
             Log::error('OrderItem index error: ' . $e->getMessage());
 
             return response()->json([
-                'message' => 'មានបញ្ហាក្នុងការទាញយកទិន្នន័យ'
+                'message' => 'Failed to retrieve order items'
             ], 500);
         }
     }
 
     /**
-     * បង្កើត Order Item ថ្មី
+     * Create a new Order Item
      */
     public function store(Request $request)
     {
@@ -44,20 +44,20 @@ class OrderItemController extends Controller
             $orderItem = Order_item::create($fields);
 
             return response()->json([
-                'message' => 'បានបន្ថែមមុខទំនិញទៅក្នុង Order រួចរាល់',
+                'message' => 'Order item created successfully',
                 'data'    => $orderItem
             ], 201);
         } catch (\Exception $e) {
             Log::error('OrderItem store error: ' . $e->getMessage());
 
             return response()->json([
-                'message' => 'បរាជ័យក្នុងការបង្កើត Order Item'
+                'message' => 'Failed to create order item'
             ], 500);
         }
     }
 
     /**
-     * បង្ហាញ Order Item មួយ
+     * Display a single Order Item
      */
     public function show($id)
     {
@@ -67,7 +67,7 @@ class OrderItemController extends Controller
 
             if (!$orderItem) {
                 return response()->json([
-                    'message' => 'រកមិនឃើញទិន្នន័យ'
+                    'message' => 'Order item not found'
                 ], 404);
             }
 
@@ -76,13 +76,13 @@ class OrderItemController extends Controller
             Log::error('OrderItem show error: ' . $e->getMessage());
 
             return response()->json([
-                'message' => 'មានបញ្ហាក្នុងការបង្ហាញទិន្នន័យ'
+                'message' => 'Failed to retrieve order item'
             ], 500);
         }
     }
 
     /**
-     * កែប្រែ Order Item
+     * Update an Order Item
      */
     public function update(Request $request, $id)
     {
@@ -91,7 +91,7 @@ class OrderItemController extends Controller
 
             if (!$orderItem) {
                 return response()->json([
-                    'message' => 'រកមិនឃើញទិន្នន័យដើម្បីកែប្រែ'
+                    'message' => 'Order item not found for update'
                 ], 404);
             }
 
@@ -103,20 +103,20 @@ class OrderItemController extends Controller
             $orderItem->update($fields);
 
             return response()->json([
-                'message' => 'បានកែប្រែជោគជ័យ',
+                'message' => 'Order item updated successfully',
                 'data'    => $orderItem
             ], 200);
         } catch (\Exception $e) {
             Log::error('OrderItem update error: ' . $e->getMessage());
 
             return response()->json([
-                'message' => 'បរាជ័យក្នុងការកែប្រែ'
+                'message' => 'Failed to update order item'
             ], 500);
         }
     }
 
     /**
-     * លុប Order Item
+     * Delete an Order Item
      */
     public function destroy($id)
     {
@@ -125,20 +125,20 @@ class OrderItemController extends Controller
 
             if (!$orderItem) {
                 return response()->json([
-                    'message' => 'រកមិនឃើញទិន្នន័យដើម្បីលុប'
+                    'message' => 'Order item not found for deletion'
                 ], 404);
             }
 
             $orderItem->delete();
 
             return response()->json([
-                'message' => 'បានលុបមុខទំនិញរួចរាល់'
+                'message' => 'Order item deleted successfully'
             ], 200);
         } catch (\Exception $e) {
             Log::error('OrderItem delete error: ' . $e->getMessage());
 
             return response()->json([
-                'message' => 'បរាជ័យក្នុងការលុប'
+                'message' => 'Failed to delete order item'
             ], 500);
         }
     }
