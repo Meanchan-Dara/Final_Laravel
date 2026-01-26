@@ -49,47 +49,45 @@ class OrderController extends Controller
     {
         $request->validate([
             'items' => 'required|array',
-            'items.*.product_id' => 'required|exists:products,id',
-            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.id' => 'required|exists:products,id',
+            'items.*.stock_qty' => 'required|integer|min:1',
         ]);
 
         try {
             return DB::transaction(function () use ($request) {
-
                 $totalAmount = 0;
                 $orderItemsData = [];
 
-                // 1. Check product stock and calculate total amount
                 foreach ($request->items as $item) {
+                    // Access column 'id' និង 'stock_qty'
+                    $product = Product::lockForUpdate()->find($item['id']);
 
-                    $product = Product::lockForUpdate()->find($item['product_id']);
-
-                    if (!$product || $product->quantity < $item['quantity']) {
+                    if (!$product || $product->stock_qty < $item['stock_qty']) {
                         throw new \Exception(
                             'Insufficient stock for product: ' . ($product->product_name ?? '')
                         );
                     }
 
-                    $totalAmount += $product->price * $item['quantity'];
+                    $totalAmount += $product->price * $item['stock_qty'];
 
                     $orderItemsData[] = [
                         'product_id' => $product->id,
-                        'quantity'   => $item['quantity'],
-                        'unit_price' => $product->price, // price at purchase time
+                        'quantity'   => $item['stock_qty'],
+                        'unit_price' => $product->price,
                     ];
 
                     // Reduce product stock
-                    $product->decrement('quantity', $item['quantity']);
+                    $product->decrement('stock_qty', $item['stock_qty']);
                 }
 
-                // 2. Create order
+                // Create order
                 $order = Order::create([
                     'user_id'      => Auth::id(),
                     'total_amount' => $totalAmount,
                     'status'       => 'pending'
                 ]);
 
-                // 3. Create order items
+                // Create order items
                 foreach ($orderItemsData as $itemData) {
                     $order->orderItems()->create($itemData);
                 }
@@ -107,6 +105,7 @@ class OrderController extends Controller
             ], 400);
         }
     }
+
 
     /**
      * Display details of a single order
